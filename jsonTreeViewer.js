@@ -13,42 +13,10 @@
 var jsonTreeViewer = (function() {
 	/* Utilities */
 	var utils = {
-		id : function (str) {
-			return document.getElementById(str);
-		},
-		hide : function(node) {
-			node.style.display = 'none';
-			
-			return this;
-		},
-		show : function(node) {
-			node.style.display = 'block';
-			
-			return this;
-		},
-		/* JSON data types */
-		is_string : function(x) {
-			return typeof x === 'string';
-		},
-		is_number : function(x) {
-			return typeof x === 'number';
-		},
-		is_boolean : function(x) {
-			return typeof x === 'boolean';
-		},
-		is_null : function(x) {
-			return x === null;
-		},
-		is_array : function(x) {
-			return Object.prototype.toString.call(x) === "[object Array]";
-		},
-		is_object : function(x) {
-			return Object.prototype.toString.call(x) === "[object Object]";
-		},
 		get_type : function(x) {
 			if (x === null) {
 				return 'null';
-			};
+			}
 			
 			switch (typeof x) {
 				case 'number':
@@ -59,7 +27,7 @@ var jsonTreeViewer = (function() {
 	
 				case 'boolean':
 					return 'boolean';
-			};
+			}
 	
 			switch(Object.prototype.toString.call(x)) {
 				case '[object Array]':
@@ -67,7 +35,7 @@ var jsonTreeViewer = (function() {
 	
 				case '[object Object]':
 					return 'object';
-			};
+			}
 			
 			throw new Error('Bad type');
 		},
@@ -75,13 +43,13 @@ var jsonTreeViewer = (function() {
 		foreach : function(obj, func) {
 			var type = utils.get_type(obj),
 				is_last = false,
-				last;
+				last, i, c;
 	
 			switch (type) {
 				case 'array':
 					last = obj.length - 1;
 					
-					for (var i = 0, c = obj.length; i < c; i++) {						
+					for (i = 0, c = obj.length; i < c; i++) {
 						if (i === last) {
 							is_last = true;
 						}
@@ -96,7 +64,7 @@ var jsonTreeViewer = (function() {
 					
 					last = keys.length - 1;
 					
-					for (var i = 0, c = keys.length; i < c; i++) {						
+					for (i = 0, c = keys.length; i < c; i++) {
 						if (i === last) {
 							is_last = true;
 						}
@@ -106,13 +74,6 @@ var jsonTreeViewer = (function() {
 	
 					break;
 			}
-		},
-		add_node_from_html : function(parent, html) {
-			var div = document.createElement('div');
-	
-			parent.appendChild(div);
-	
-			div.outerHTML = html;
 		},
 		inherits : (function() {
 			var F = function() {};
@@ -325,20 +286,16 @@ var jsonTreeViewer = (function() {
 		Node_complex.call(this, name, value, is_last);
 	}
 	utils.inherits(Node_array, Node_complex);
-	
-	
+
 	/* Tree */
 	var tree = (function() {
-		var el = document.getElementById("tree"),
+		var el = null,
 			root = null;
-			
-		el.addEventListener('mousedown', function(e) {
-			e.preventDefault();
-		}, false);
 
 		return {
-			set_root : function(child) {
+			set_root : function(child, elementID) {
 				root = child;
+                el = document.getElementById(elementID);
 				el.innerHTML = '';
 
 				el.appendChild(child.el);
@@ -355,126 +312,9 @@ var jsonTreeViewer = (function() {
 			}
 		};
 	})();
-	
-	/* Buttons and actions */
-	var buttons = (function() {
-		var all = document.getElementById('nav').getElementsByTagName('li'),
-			load = document.getElementById('load_button'),
-			expand = document.getElementById('expand_button'),
-			collapse = document.getElementById('collapse_button'),
-			show_help = document.getElementById('help_button');
-		
-		function deselectAll() {
-			utils.foreach(all, function(x) {
-				x.classList.remove('selected');
-			});
-		}
-		
-		function selectOne(button) {
-			deselectAll();
-			button.classList.add('selected');
-		}
-		
-		/* Load button */
-		function onLoadButtonClick(e) {
-			load_json_form.show();
-			
-			e.preventDefault();
-		}
-		
-		/* Expand button */
-		function onExpandButtonClick(e) {
-			tree.expand();
-			
-			e.preventDefault();
-		}
-		
-		/* Collapse button */
-		function onCollapseButtonClick(e) {
-			tree.collapse();
-			
-			e.preventDefault();
-		}
-		
-		/* Help button */
-		function onShowHelpButtonClick(e) {
-			help.show();
-			
-			e.preventDefault();
-		}
-		
-		load.addEventListener('click', onLoadButtonClick, false);
-		expand.addEventListener('click', onExpandButtonClick, false);
-		collapse.addEventListener('click', onCollapseButtonClick, false);
-		show_help.addEventListener('click', onShowHelpButtonClick, false);
-	})();
-	
-	/* Load json form */
-	var load_json_form = (function() {
-		var form = document.getElementById('load_json_wrapper'),
-			code_input = document.getElementById('code_input'),
-			load_button = document.getElementById('load_code_button'),
-			close_button = form.querySelector('.close_button'),
-			overlay = document.getElementById('overlay');
-		
-		function load(e) {
-			jsonTreeViewer.parse(code_input.value);
-			hide();
-			
-			e.preventDefault();
-		};
-		
-		function hide() {
-			utils.hide(form);
-			utils.hide(overlay);
-		}
-		
-		load_button.addEventListener('click', load, false);
-		
-		close_button.addEventListener('click', hide, false);
-		
-		overlay.addEventListener('click', hide, false);
-		
-		return {
-			show : function() {
-				code_input.value = '';
-				utils.show(form);
-				utils.show(overlay);
-			},
-			hide : hide
-		};
-	})();
 
-	
-	/* Help block */
-	var help = (function() {
-		var block = document.getElementById('help'),
-			overlay = document.getElementById('overlay'),
-			close_button = block.querySelector('.close_button');
-			
-		function hide() {
-			utils.hide(block);
-			utils.hide(overlay);
-		}
-		
-		function show() {
-			utils.show(block);
-			utils.show(overlay);
-		}
-			
-		overlay.addEventListener('click', hide, false);
-			
-		close_button.addEventListener('click', hide, false);
-			
-		return {
-			show : show,
-			hide : hide
-		};	
-	})();
-
-		
 	return {
-		parse : function(json_str) {
+		parse : function(json_str, elementID) {
 			var temp;
 
 			try {
@@ -483,11 +323,9 @@ var jsonTreeViewer = (function() {
 				alert(e);
 			}
 			
-			tree.set_root(new Node(null, temp, 'last'));
+			tree.set_root(new Node(null, temp, 'last'), elementID);
+
+            return tree;
 		}
-	};	
+	};
 })();
-
-var example = '{"firstName": "John","lastName": "Smith","isAlive": true,"age": 25,"company": null,"height_cm": 167.64,"address": {"streetAddress": "21 2nd Street","city": "New York","state": "NY","postalCode": "10021-3100"},"phoneNumbers": [{ "type": "home", "number": "212 555-1234" },{ "type": "fax",  "number": "646 555-4567" }]}';
-
-jsonTreeViewer.parse(example);

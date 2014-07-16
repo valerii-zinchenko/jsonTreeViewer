@@ -71,7 +71,8 @@
         </section>
     </div>
     <footer>
-        <a href="http://github.com/summerstyle/jsonTreeViewer">jsonTreeViewer</a><br />
+        Main source: <a href="http://github.com/summerstyle/jsonTreeViewer">jsonTreeViewer</a><br />
+        Current fork: <a href="http://github.com/valerii-zinchenko/jsonTreeViewer">jsonTreeViewer</a><br />
         &copy; 2014 Vera Lobacheva<br />
         GPL3 License
     </footer>
@@ -90,6 +91,119 @@
 	</form>
 </div>
 
+<!-- Usage example -->
 <script src="jsonTreeViewer.js"></script>
+<script>
+    var example = '{"firstName": "John","lastName": "Smith","isAlive": true,"age": 25,"company": null,"height_cm": 167.64,"address": {"streetAddress": "21 2nd Street","city": "New York","state": "NY","postalCode": "10021-3100"},"phoneNumbers": [{ "type": "home", "number": "212 555-1234" },{ "type": "fax",  "number": "646 555-4567" }]}';
+    var tree = jsonTreeViewer.parse(example, "tree");
+</script>
+
+
+<!-- Controls -->
+<script>
+    /* Buttons and actions */
+    var buttons = (function() {
+        var load = document.getElementById('load_button'),
+            expand = document.getElementById('expand_button'),
+            collapse = document.getElementById('collapse_button'),
+            show_help = document.getElementById('help_button');
+
+        /* Load button */
+        function onLoadButtonClick(e) {
+            load_json_form.show();
+
+            e.preventDefault();
+        }
+
+        /* Expand button */
+        function onExpandButtonClick(e) {
+            tree.expand();
+
+            e.preventDefault();
+        }
+
+        /* Collapse button */
+        function onCollapseButtonClick(e) {
+            tree.collapse();
+
+            e.preventDefault();
+        }
+
+        /* Help button */
+        function onShowHelpButtonClick(e) {
+            help.show();
+
+            e.preventDefault();
+        }
+
+        load.addEventListener('click', onLoadButtonClick, false);
+        expand.addEventListener('click', onExpandButtonClick, false);
+        collapse.addEventListener('click', onCollapseButtonClick, false);
+        show_help.addEventListener('click', onShowHelpButtonClick, false);
+    })();
+
+    /* Load json form */
+    var load_json_form = (function() {
+        var form = document.getElementById('load_json_wrapper'),
+            code_input = document.getElementById('code_input'),
+            load_button = document.getElementById('load_code_button'),
+            close_button = form.querySelector('.close_button'),
+            overlay = document.getElementById('overlay');
+
+        function load(e) {
+            jsonTreeViewer.parse(code_input.value, "tree");
+            hide();
+
+            e.preventDefault();
+        }
+
+        function hide() {
+            form.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function show() {
+            form.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        load_button.addEventListener('click', load, false);
+
+        close_button.addEventListener('click', hide, false);
+
+        overlay.addEventListener('click', hide, false);
+
+        return {
+            show : show,
+            hide : hide
+        };
+    })();
+
+    /* Help block */
+    var help = (function() {
+        var block = document.getElementById('help'),
+            overlay = document.getElementById('overlay'),
+            close_button = block.querySelector('.close_button');
+
+        function hide() {
+            block.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function show() {
+            block.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        overlay.addEventListener('click', hide, false);
+
+        close_button.addEventListener('click', hide, false);
+
+        return {
+            show : show,
+            hide : hide
+        };
+    })();
+</script>
 </body>
 </html>
