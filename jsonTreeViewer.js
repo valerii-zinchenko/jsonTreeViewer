@@ -1,14 +1,11 @@
 /*
- * Fork of JSON Tree Viewer
- * http://github.com/valerii-zinchenko/jsonTreeViewer
- *
- * Original JSON Tree Viewer
+ * JSON Tree Viewer
  * http://github.com/summerstyle/jsonTreeViewer
  *
  * Copyright 2014 Vera Lobacheva (summerstyle.ru)
  * Released under the GPL3 (GPL3.txt)
  *
- * 18.07.2014 12:30 GMT+0300
+ * Sun 27 2014 20:15:00 GMT+0400
  */
 
 'use strict';
